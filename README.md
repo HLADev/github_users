@@ -2,6 +2,6 @@
 Список всех гитхаб-юзеров.
 - MVP (moxy);
 - Dagger2;
-- RxJava;
-- Retrofit, Picasso;
+- RxJava2;
+- Retrofit2, Picasso;
 - RecyclerView с "автоподгрузкой".
