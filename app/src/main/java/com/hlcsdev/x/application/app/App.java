@@ -2,28 +2,23 @@ package com.hlcsdev.x.application.app;
 
 import android.app.Application;
 
-import com.hlcsdev.x.application.net.Api;
-
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import com.hlcsdev.x.application.di.AppComponent;
+import com.hlcsdev.x.application.di.DaggerAppComponent;
 
 
 public class App extends Application {
 
-    private static Api retrofit;
+    private static AppComponent appComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        Retrofit retro = new Retrofit.Builder()
-                .baseUrl("https://api.github.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        retrofit = retro.create(Api.class);
+        appComponent = DaggerAppComponent.builder().build();
+
     }
 
-    public static Api getRetrofit() {
-        return retrofit;
+    public static AppComponent getAppComponent() {
+        return appComponent;
     }
 }

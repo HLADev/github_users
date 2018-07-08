@@ -1,41 +1,43 @@
 package com.hlcsdev.x.application.ui.mainlist;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.hlcsdev.x.application.R;
 import com.hlcsdev.x.application.datamodels.User;
-import com.hlcsdev.x.application.databinding.FragmentMainBinding;
 import com.hlcsdev.x.application.ui.MainActivity;
 import com.hlcsdev.x.application.ui.mainlist.adapters.RvAdapter;
 
-
 import java.util.List;
+
 
 public class MainFragment extends MvpAppCompatFragment implements MainView {
 
     @InjectPresenter
     MainPresenter presenter;
 
-    private FragmentMainBinding binding;
     private RvAdapter adapter;
 
+    private RecyclerView recyclerView;
+    private ProgressBar progressBar;
 
     private MainFragmentCallback fragmentCallback;
 
 
     public interface MainFragmentCallback {
-        void onItemClick(int pos);
+        void onItemClick(User user);
         void onStartMainFragment(int title);
     }
 
@@ -59,14 +61,15 @@ public class MainFragment extends MvpAppCompatFragment implements MainView {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false);
+        View view = inflater.inflate(R.layout.fragment_main, container, false);
 
         fragmentCallback.onStartMainFragment(R.string.main);
 
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        binding.recyclerView.setAdapter(adapter);
+        findViews(view);
 
-        return binding.getRoot();
+        initRecyclerView();
+
+        return view;
     }
 
 
@@ -74,8 +77,8 @@ public class MainFragment extends MvpAppCompatFragment implements MainView {
         adapter = new RvAdapter();
         adapter.setCallback(new RvAdapter.Callback() {
             @Override
-            public void onItemClick(int pos) {
-                fragmentCallback.onItemClick(pos);
+            public void onItemClick(User user) {
+                fragmentCallback.onItemClick(user);
             }
 
             @Override
@@ -88,20 +91,37 @@ public class MainFragment extends MvpAppCompatFragment implements MainView {
     }
 
 
+    private void findViews(View view) {
+        recyclerView = view.findViewById(R.id.recyclerView);
+        progressBar = view.findViewById(R.id.progressBar);
+    }
+
+
+    private void initRecyclerView() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        recyclerView.setAdapter(adapter);
+    }
+
+
     @Override
     public void showProgress(boolean b) {
         if (b) {
-            binding.progressBar.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
         }
         else {
-            binding.progressBar.setVisibility(View.INVISIBLE);
+            progressBar.setVisibility(View.INVISIBLE);
         }
     }
-
 
     @Override
     public void showList(List<User> users) {
         adapter.setUsers(users);
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void showToast(String s) {
+        Toast.makeText(getActivity(), s, Toast.LENGTH_LONG).show();
     }
 }

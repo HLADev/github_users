@@ -26,7 +26,7 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.ViewHolder> {
 
 
     public interface Callback {
-        void onItemClick(int pos);
+        void onItemClick(User user);
         void onEndScroll(int pos);
     }
 
@@ -44,7 +44,7 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.ViewHolder> {
         holder.name.setText(users.get(pos).getLogin());
 
         holder.itemView.setOnClickListener(view -> {
-            callback.onItemClick(pos);
+            callback.onItemClick(users.get(pos));
         });
     }
 

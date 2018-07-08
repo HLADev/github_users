@@ -14,4 +14,6 @@ public interface MainView extends MvpView {
     void showProgress(boolean b);
 
     void showList(List<User> users);
+
+    void showToast(String s);
 }

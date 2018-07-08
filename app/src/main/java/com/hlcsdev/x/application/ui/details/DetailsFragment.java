@@ -1,38 +1,34 @@
 package com.hlcsdev.x.application.ui.details;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.hlcsdev.x.application.R;
-import com.hlcsdev.x.application.databinding.FragmentDetailsBinding;
+import com.hlcsdev.x.application.datamodels.User;
 import com.hlcsdev.x.application.ui.MainActivity;
-import com.hlcsdev.x.application.ui.mainlist.MainFragment;
 import com.squareup.picasso.Picasso;
 
-public class DetailsFragment extends MvpAppCompatFragment implements DetailsView {
+public class DetailsFragment extends Fragment {
 
-    private FragmentDetailsBinding binding;
+    private TextView tvName;
+    private ImageView ivImage;
 
-    @InjectPresenter
-    DetailsPresenter presenter;
-
-    private int pos;
+    private User user;
 
 
-    public DetailsFragment newInstance(int pos) {
+    public DetailsFragment newInstance(User user) {
         DetailsFragment fragment = new DetailsFragment();
         Bundle args = new Bundle();
-        args.putInt("pos", pos);
+        args.putSerializable("user", user);
         fragment.setArguments(args);
         return fragment;
     }
@@ -58,33 +54,37 @@ public class DetailsFragment extends MvpAppCompatFragment implements DetailsView
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        pos = getArguments().getInt("pos");
+        user = (User) getArguments().getSerializable("user");
     }
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_details, container, false);
+        View view = inflater.inflate(R.layout.fragment_details, container, false);
 
         fragmentCallback.onStartDetailsFragment(R.string.details);
 
-        presenter.setUi(pos);
+        findViews(view);
 
-        return binding.getRoot();
+        setUi();
+
+        return view;
     }
 
 
-    @Override
-    public void showName(String name) {
-        binding.name.setText(name);
+    private void findViews(View view) {
+        tvName = view.findViewById(R.id.tvName);
+        ivImage = view.findViewById(R.id.ivImage);
     }
 
 
-    @Override
-    public void showImage(String url) {
+    public void setUi() {
+        tvName.setText(user.getLogin());
+
         Picasso.with(getActivity())
-                .load(url)
-                .into(binding.image);
+                .load(user.getAvatarUrl())
+                .into(ivImage);
     }
+
 }

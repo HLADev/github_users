@@ -1,71 +1,36 @@
 package com.hlcsdev.x.application.repositories;
 
-import com.hlcsdev.x.application.app.App;
 import com.hlcsdev.x.application.datamodels.User;
+import com.hlcsdev.x.application.net.Api;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.Observable;
 
 
 public class Repository {
 
-    private static Repository repository;
-
     private int since;
-    private List<User> users = new ArrayList<>();
+    private List<User> userList = new ArrayList<>();
 
+    private Api api;
 
-    private Repository() {
-    }
-
-    public static Repository getRepository() {
-        if (repository == null) {
-            repository = new Repository();
-        }
-        return repository;
+    public Repository(Api api) {
+        this.api = api;
     }
 
 
-    public interface LoadUsersCallback {
-        void onLoad(List<User> users);
-    }
-
-
-    public void getUsers(LoadUsersCallback loadUserCallback) {
-        App.getRetrofit().getUsers(since).enqueue(new Callback<List<User>>() {
-            @Override
-            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-
-                if (response.body() != null) {
-                    users.addAll(response.body());
-
-                    loadUserCallback.onLoad(users);
-                }
-                // TODO убрать потом
-                else {
-                    for (int i = 0; i < 30; i++) {
-                        users.add(new User("Вася " + users.size()));
+    public Observable<Object> getUsers() {
+        return api.getUsers(since)
+                .flatMap(response -> {
+                    if (response.isSuccessful()) {
+                        userList.addAll(response.body());
+                        since += 30;
+                        return Observable.fromArray(userList);
                     }
-
-                    loadUserCallback.onLoad(users);
-                }
-
-                since += 30;
-            }
-
-            @Override
-            public void onFailure(Call<List<User>> call, Throwable t) {
-            }
-        });
-    }
-
-
-    public User getUser(int pos) {
-        return users.get(pos);
+                    return null;
+                });
     }
 
 }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.hlcsdev.x.application.R;
+import com.hlcsdev.x.application.datamodels.User;
 import com.hlcsdev.x.application.ui.details.DetailsFragment;
 import com.hlcsdev.x.application.ui.mainlist.MainFragment;
 
@@ -43,9 +44,9 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Main
 
 
     @Override
-    public void onItemClick(int pos) {
+    public void onItemClick(User user) {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, new DetailsFragment().newInstance(pos))
+                .replace(R.id.container, new DetailsFragment().newInstance(user))
                 .addToBackStack(null)
                 .commit();
     }
