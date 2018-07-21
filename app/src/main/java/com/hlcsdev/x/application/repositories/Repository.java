@@ -21,13 +21,15 @@ public class Repository {
     }
 
 
-    public Observable<Object> getUsers() {
+    public Observable<List<User>> getUsers() {
         return api.getUsers(since)
                 .flatMap(response -> {
                     if (response.isSuccessful()) {
-                        userList.addAll(response.body());
-                        since += 30;
-                        return Observable.fromArray(userList);
+                        if (response.body() != null) {
+                            userList.addAll(response.body());
+                            since += 30;
+                            return Observable.just(userList);
+                        }
                     }
                     return null;
                 });

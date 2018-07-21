@@ -40,10 +40,10 @@ public class MainPresenter extends MvpPresenter<MainView> {
 
         Disposable disposable = repository.getUsers()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(o -> {
-                    if (o != null) {
+                .subscribe(userList -> {
+                    if (userList != null) {
                         getViewState().showProgress(false);
-                        getViewState().showList((List<User>)o);
+                        getViewState().showList(userList);
                     }
                 }, throwable -> {
                     getViewState().showToast(throwable.getMessage());
